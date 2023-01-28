@@ -1,0 +1,29 @@
+{
+    "name": "nabil12ful/store-data-requests",
+    "description": "Store data to DB by  model from requests fields in form html",
+    "type": "library",
+    "require": {
+        "illuminate/support": "^9.21|^10.0",
+        "php": "^8.0"
+    },
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Nabil12ful\\StoreDataRequests\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Nabil12ful\\StoreDataRequests\\StoreDataRequestsServiceProvider"
+            ]
+        }
+    },
+    "authors": [
+        {
+            "name": "Nabil Hamada",
+            "email": "nabilhamada421@gmail.com"
+        }
+    ],
+    "minimum-stability": "stable"
+}
