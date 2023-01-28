@@ -21,6 +21,10 @@ class {{ class }} extends Controller
         //
     ];
 
+    protected $mediaColumns = [
+        // columns name have a media files
+    ];
+
 
     /**
      * Display a listing of the resource.
@@ -112,7 +116,7 @@ class {{ class }} extends Controller
      */
     public function destroy($id)
     {
-        StoreDataRequests::delete(decrypt($id), $this->data['Models']);
+        StoreDataRequests::deleteHasFiles(decrypt($id), $this->data['upload'], $this->mediaColumns, $this->data['Models']);
         toastr()->error('تم الحذف بنجاح', 'عملية ناجحة');
         return redirect()->back();
     }
