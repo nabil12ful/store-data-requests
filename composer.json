@@ -9,13 +9,13 @@
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "Nabil12ful\\StoreDataRequests\\": "src/"
+            "Nabil\\StoreDataRequests\\": "src/"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "Nabil12ful\\StoreDataRequests\\StoreDataRequestsServiceProvider"
+                "Nabil\\StoreDataRequests\\StoreDataRequestsServiceProvider"
             ]
         }
     },
