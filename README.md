@@ -35,6 +35,11 @@ protected $columns = [
 	'name',
 	'email',
 ];
+
+protected $mediaCols = [
+    // columns name have a media files for delete file whene delete A record like [Image]
+    'image'
+];
 ```
 ### To use Vaildation 
 Create request validation by
