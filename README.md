@@ -1,4 +1,6 @@
-# Store Data Requests
+# Store Data Requests for Laravel
+
+>## Support laravel v9 & PHP v8
 
 Store data to database from (Form Requsts Fields) by Model
 
