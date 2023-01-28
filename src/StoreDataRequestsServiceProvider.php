@@ -23,11 +23,17 @@ class StoreDataRequestsServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $this->publishes([
-            __DIR__.'/../stubs/controller.stub' => base_path('stubs'),
-        ]);
-        $this->publishes([
-            __DIR__.'/../stubs/model.stub' => base_path('stubs'),
-        ]);
+        if(!file_exists(base_path('stubs/')))
+        {
+            mkdir(base_path('stubs/'));
+        }
+        copy(__DIR__.'/../stubs/controller.stub', base_path('stubs/controller.stub'));
+        copy(__DIR__.'/../stubs/model.stub', base_path('stubs/model.stub'));
+        // $this->publishes([
+        //     __DIR__.'/../stubs/controller.stub' => base_path('stubs'),
+        // ]);
+        // $this->publishes([
+        //     __DIR__.'/../stubs/model.stub' => base_path('stubs'),
+        // ]);
     }
 }
