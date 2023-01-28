@@ -34,7 +34,7 @@ Change this info after controller generation & Congratolations :smile:
 		'email,
     ];
 
-###To use Vaildation 
+### To use Vaildation 
 Create request validation by
 ```
 php artisan make:request ProdectStoreRequest
@@ -78,5 +78,5 @@ or update has file:
 StoreDataRequests::model('Prodect')->make($request, ['title','description'])->updateHasFile($id, 'path/to/upload');
 ```
 
-#Thanks
+# Thanks
 ### Made with :heart: By Eng/Nabil Hamada & Eng/Sameh Mohamed
