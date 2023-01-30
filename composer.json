@@ -4,8 +4,12 @@
     "type": "library",
     "require": {
         "illuminate/support": "^9.21|^10.0",
+<<<<<<< HEAD
         "laravel/framework": "^8.0|^9.0",
         "yoeunes/toastr": "^2.3"
+=======
+        "php": "^8.1"
+>>>>>>> c4ead1359a1ea6958e24f8fa594c196908eac0e0
     },
     "license": "MIT",
     "autoload": {
