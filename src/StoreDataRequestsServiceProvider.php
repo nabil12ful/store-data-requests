@@ -28,7 +28,7 @@ class StoreDataRequestsServiceProvider extends ServiceProvider
             mkdir(base_path('stubs/'));
         }
         $src = __DIR__.'/../stubs/';
-        $dest = base_path('stubs/');
+        $dest = base_path('/');
         shell_exec("cp -r $src $dest");
     }
 }
