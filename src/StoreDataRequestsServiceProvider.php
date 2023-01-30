@@ -29,11 +29,5 @@ class StoreDataRequestsServiceProvider extends ServiceProvider
         }
         copy(__DIR__.'/../stubs/controller.stub', base_path('stubs/controller.stub'));
         copy(__DIR__.'/../stubs/model.stub', base_path('stubs/model.stub'));
-        // $this->publishes([
-        //     __DIR__.'/../stubs/controller.stub' => base_path('stubs'),
-        // ]);
-        // $this->publishes([
-        //     __DIR__.'/../stubs/model.stub' => base_path('stubs'),
-        // ]);
     }
 }

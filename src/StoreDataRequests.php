@@ -1,5 +1,5 @@
 <?php
-namespace Nabil\StoreDataRequests;
+namespace Nabil;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
@@ -78,7 +78,7 @@ class StoreDataRequests
         {
             $data[$attr] = Self::$request->{$attr};
         }
-        Self::$model::create($data);
+        return Self::$model::create($data);
     }
 
     /**
@@ -113,7 +113,7 @@ class StoreDataRequests
                 $data[$attr] = Self::$request->{$attr};
             }
         }
-        Self::$model::create($data);
+        return Self::$model::create($data);
     }
 
     /**

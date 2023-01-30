@@ -1,6 +1,6 @@
 # Store Data Requests for Laravel
 
->## Support laravel v9 & PHP v8
+>## Support laravel v8+
 
 Store data to database from (Form Requsts Fields) by Model
 
@@ -14,6 +14,10 @@ To publish
 php artisan vendor:publish --provider="Nabil\StoreDataRequests\StoreDataRequestsServiceProfider"
 ```
 ## Usage
+
+```
+php artisan make:serivce 
+```
 
 ```php
 php artisan make:controller ProdectController -r
