@@ -1,6 +1,6 @@
 <?php
 
-namespace Nabil\StoreDataRequests;
+namespace Nabil;
 
 use Illuminate\Support\ServiceProvider;
 

@@ -11,7 +11,7 @@ composer require nabil12ful/store-data-requests
 ```
 To publish
 ```php
-php artisan vendor:publish --provider="Nabil\StoreDataRequests\StoreDataRequestsServiceProfider"
+php artisan vendor:publish --provider="Nabil\StoreDataRequestsServiceProfider"
 ```
 ## Usage
 
@@ -61,7 +61,7 @@ public function store(ProdectStoreRequest $request): RedirectResponse
 ## Use our service in simple Controller
 Firest import our plugin in your Controller file
 ```php
-use Nabil\StoreDataRequests\StoreDataRequests;
+use Nabil\StoreDataRequests;
 ```
 And write this code to create a new record:
 
