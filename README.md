@@ -15,9 +15,6 @@ php artisan vendor:publish --provider="Nabil\StoreDataRequests\StoreDataRequests
 ```
 ## Usage
 
-```
-php artisan make:serivce 
-```
 
 ```php
 php artisan make:controller ProdectController -r
