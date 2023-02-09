@@ -3,9 +3,12 @@ namespace Nabil;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
+use Nabil\StoreDataRequests as NabilStoreDataRequests;
 
-class StoreDataRequests
+class StoreDataRequests implements NabilStoreDataRequests
 {
+    use File;
+
     /**
      * @var array
      */
@@ -144,18 +147,6 @@ class StoreDataRequests
     }
 
     /**
-     * Upload file
-     * @param RequestHasFile $file
-     * @param String $path
-     */
-    public static function uploadFile($file, $path)
-    {
-        $filename = time() . $file->getClientOriginalname();
-        $file->move($path, $filename);
-        return $filename;
-    }
-
-    /**
      * Delete record in Model
      * 
      * @param Int $id
@@ -190,21 +181,5 @@ class StoreDataRequests
             File::delete(Self::parsePath($path).$model->$columns);
         }
         $model->delete();
-    }
-
-    /**
-     * Parse Path 
-     * 
-     * @param String $path
-     */
-    protected static function parsePath($path)
-    {
-        $folders = explode('/', $path);
-        $path = '';
-        foreach($folders as $folder)
-        {
-            !empty($folder) ? $path .= $folder .'/' : $path .= $folder;
-        }
-        return $path;
     }
 }
