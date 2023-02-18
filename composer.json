@@ -1,6 +1,6 @@
 {
     "name": "nabil12ful/store-data-requests",
-    "description": "Store data to DB by  model from requests fields in form html",
+    "description": "Store data to DB by model from requests fields html form",
     "type": "library",
     "require": {
         "illuminate/support": "^9.21|^10.0",

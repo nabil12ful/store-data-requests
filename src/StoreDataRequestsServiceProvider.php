@@ -23,16 +23,21 @@ class StoreDataRequestsServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        
         if(!file_exists(base_path('stubs/')))
         {
             mkdir(base_path('stubs/'));
         }
-        $scan = scandir(__DIR__.'/../stubs');
-        foreach($scan as $file)
-        {
-            if (!is_dir(base_path('stubs')."/$file")) {
-                copy(__DIR__.'/../stubs/'.$file, base_path('stubs/'.$file));
-            }
-        }
+        // $scan = scandir(__DIR__.'/../stubs');
+        $this->publishes([
+            __DIR__.'/../stubs' => base_path('stubs'),
+        ]);
+        // foreach($scan as $file)
+        // {
+        //     if (!is_dir(base_path('stubs')."/$file")) {
+        //         copy(__DIR__.'/../stubs/'.$file, base_path('stubs/'.$file));
+        //     }
+        //     return true;
+        // }
     }
 }

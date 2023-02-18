@@ -17,18 +17,23 @@ php artisan vendor:publish --provider="Nabil\StoreDataRequestsServiceProfider"
 
 
 ```php
-php artisan make:controller ProdectController -r
+php artisan make:controller UserController -r
+```
+
+### Or
+
+```php
+php artisan make:controller UserController -m User
 ```
 
 Change this info after controller generation & Congratolations :smile:
+
 ```php
-protected $data = [
-	'folder' => 'backend.',
-	'var' => 'admin.',
-	'Models' => 'App\Models\{Model}', // {Model Name}
-	'folderBlade' => 'folder', // blade path
-	'upload' => 'upload/folder', // upload path
-];
+protected $model = \App\Models\User::class;
+
+protected $folderBlade = 'frontend.user'; // View folder name OR path
+
+protected $uploadPath = 'upload/';
 
 protected $columns = [
 	// table columns & fields name
@@ -42,6 +47,24 @@ protected $mediaCols = [
     'image'
 ];
 ```
+
+### Views Folder 
+> ```
+> +--- views
+> |    +--- frontend
+> |    |    +--- user
+> |    |    |    +--- index.blade.php
+> |    |    |    +--- create.blade.php
+> |    |    |    +--- edit.blade.php
+> |    |    |    +--- show.blade.php
+> |    |    +--- product
+> |    |    |    +--- index.blade.php
+> |    |    |    +--- create.blade.php
+> |    |    |    +--- edit.blade.php
+> |    |    |    +--- show.blade.php
+> |    |    +--- index.blade.php
+> ```
+
 ### To use Vaildation 
 Create request validation by
 ```php
@@ -51,12 +74,52 @@ php artisan make:request ProdectStoreRequest
 ```php
 public function store(ProdectStoreRequest $request): RedirectResponse
 {
-	StoreDataRequests::model($this->data['Models'])->make($request, $this->columns)->store();
+	StoreDataRequests::model($this->model)->make($request, $this->columns)->store();
 }
 ```
 
+#### Or use
+First change columns array like:
+
+```php
+protected $columns = [
+	// table columns & fields name with rules
+	'image' => 'required',
+	'name' => 'required|string|min:5',
+	'email' => 'required|email',
+];
+```
+And use `storeWithValidate`, `updateWithValidate`, `storeHasFilesValidate` or `updateHasFilesValidate` method
+
+```php
+public function store(Request $request)
+{
+	$result = StoreDataRequests::model($this->model)->make($request, $this->columns)->storeWithValidate();
+
+    if(isset($result->id))
+    {
+        toastr()->success('The data has been stored successfully', 'Success');
+        return redirect()->back();
+    }else{
+        return back()->withInput()->withErrors($result);
+    }
+}
+```
+
+## Delete records
+
+```php
+StoreDataRequests::delete(decrypt($id), $this->model);
+```
+
+If you want to delete files from uploads path with delete a record:
+
+```php
+StoreDataRequests::deleteHasFiles(decrypt($id), $this->uploadPath, $this->mediaColumns, $this->model);
+```
+
 ## Use our service in simple Controller
-Firest import our plugin in your Controller file
+First import our plugin in your Controller file
 ```php
 use Nabil\StoreDataRequests;
 ```
@@ -76,18 +139,18 @@ public function update(Request $request, $id)
 	StoreDataRequests::model('Prodect')->make($request, ['title','description'])->update($id);
 }
 ```
-## Upload files
+## Upload files with insert data
 
 use:
 
 ```php
-StoreDataRequests::model('Prodect')->make($request, ['title','description'])->storeHasFile('path/to/upload');
+StoreDataRequests::model('Prodect')->make($request, ['image','title','description'])->storeHasFile('path/to/upload');
 ```
 or update has file:
 
 ```php
-StoreDataRequests::model('Prodect')->make($request, ['title','description'])->updateHasFile($id, 'path/to/upload');
+StoreDataRequests::model('Prodect')->make($request, ['image','title','description'])->updateHasFile($id, 'path/to/upload');
 ```
 
-# Thanks
-### Made with :heart: By Eng/Nabil Hamada & Eng/Sameh Mohamed
+### Thanks for Eng/Sameh Mohamed
+## Made with :heart: By Eng/Nabil Hamada

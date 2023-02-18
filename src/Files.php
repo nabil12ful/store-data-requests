@@ -1,7 +1,7 @@
 <?php
 namespace Nabil;
 
-trait File
+trait Files
 {
     /**
      * Parse Path 

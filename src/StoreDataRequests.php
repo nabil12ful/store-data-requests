@@ -3,11 +3,12 @@ namespace Nabil;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
-use Nabil\StoreDataRequests as NabilStoreDataRequests;
+use Illuminate\Support\Facades\Validator;
+use Nabil\Contract\StoreDataRequestsInterface as StoreData;
 
-class StoreDataRequests implements NabilStoreDataRequests
+class StoreDataRequests implements StoreData
 {
-    use File;
+    use Files;
 
     /**
      * @var array
@@ -85,6 +86,26 @@ class StoreDataRequests implements NabilStoreDataRequests
     }
 
     /**
+     * Store Data to Model with validation
+     */
+    public static function storeWithValidate()
+    {
+        $attrs = array_keys(Self::$attrs);
+        $valid = Validator::make(Self::$request->all(), Self::$attrs);
+        if($valid->fails())
+        {
+            return $valid;
+        }else{
+            $data = [];
+            foreach($attrs as $attr)
+            {
+                $data[$attr] = Self::$request->{$attr};
+            }
+            return Self::$model::create($data);
+        }
+    }
+
+    /**
      * Update data on Model
      * 
      * @param Int $id
@@ -100,11 +121,33 @@ class StoreDataRequests implements NabilStoreDataRequests
     }
 
     /**
-     * Store data to model & upload file
+     * Update data on Model with Validation
+     * 
+     * @param Int $id
+     */
+    public static function updateWithValidate($id)
+    {
+        $attrs = array_keys(Self::$attrs);
+        $valid = Validator::make(Self::$request, Self::$attrs);
+        if($valid->fails())
+        {
+            return $valid;
+        }else{
+            $model = Self::$model::findOrFail($id);
+            foreach($attrs as $attr)
+            {
+                $model->{$attr} = Self::$request->{$attr};
+            }
+            $model->update();
+        }
+    }
+
+    /**
+     * Store data to model & upload files
      * 
      * @param String $path
      */
-    public static function storeHasFile($path)
+    public static function storeHasFiles($path)
     {
         $data = [];
         foreach(Self::$attrs as $attr)
@@ -120,12 +163,66 @@ class StoreDataRequests implements NabilStoreDataRequests
     }
 
     /**
-     * Update data in Model & Upload File
+     * Store data to model & upload files with validate
+     * 
+     * @param String $path
+     */
+    public static function storeHasFilesValidate($path)
+    {
+        $attrs = array_keys(Self::$attrs);
+        $valid = Validator::make(Self::$request, Self::$attrs);
+        if($valid->fails())
+        {
+            return back()->withInput()->withErrors($valid);
+        }else{
+            $data = [];
+            foreach($attrs as $attr)
+            {
+                if(Self::$request->hasfile($attr))
+                {
+                    $data[$attr] = Self::uploadFile(Self::$request->$attr, $path);
+                }else{
+                    $data[$attr] = Self::$request->{$attr};
+                }
+            }
+            return Self::$model::create($data);
+        }
+    }
+
+    /**
+     * Update data in Model & Upload Files
      * 
      * @param Int $id
      * @param String $path 
      */
-    public static function updateHasFile($id, $path)
+    public static function updateHasFiles($id, $path)
+    {
+        $model = Self::$model::findOrFail($id);
+        foreach(Self::$attrs as $attr)
+        {
+            if(!empty(Self::$request->$attr) && Self::$request->hasfile($attr))
+            {
+                File::delete(Self::parsePath($path).$model->{$attr});
+                $model->{$attr} = Self::uploadFile(Self::$request->{$attr}, $path);
+            }
+            elseif(empty(Self::$request->$attr))
+            {
+                $model->{$attr} = $model->{$attr};
+            }
+            else{
+                $model->{$attr} = Self::$request->{$attr};
+            }
+        }
+        $model->update();
+    }
+
+    /**
+     * Update data in Model & Upload Files with validate
+     * 
+     * @param Int $id
+     * @param String $path 
+     */
+    public static function updateHasFilesValidate($id, $path)
     {
         $model = Self::$model::findOrFail($id);
         foreach(Self::$attrs as $attr)

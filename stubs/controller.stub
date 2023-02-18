@@ -8,17 +8,14 @@ use Nabil\StoreDataRequests;
 
 class {{ class }} extends Controller
 {
+    protected $model = \App\Models\User::class;
 
-    protected $data = [
-        'folder' => 'backend.',
-        'var' => 'admin.',
-        'Models' => 'App\Models\Model',
-        'folderBlade' => 'folder',
-        'upload' => 'upload/folder',
-    ];
+    protected $folderBlade = 'frontend.';
+
+    protected $uploadPath = 'upload/';
 
     protected $columns = [
-        //
+
     ];
 
     protected $mediaColumns = [
@@ -34,9 +31,9 @@ class {{ class }} extends Controller
     public function index()
     {
         $data = [
-            'data' => $this->data['Models']::all(),
+            'data' => $this->model::all(),
         ];
-        return view($this->data['folder'] . $this->data['folderBlade'] . '.index', $data);
+        return view($this->folderBlade . '.index', $data);
     }
 
     /**
@@ -49,7 +46,7 @@ class {{ class }} extends Controller
         $data = [
 
         ];
-        return view($this->data['folder'] . $this->data['folderBlade'] . '.create', $data);
+        return view($this->folderBlade . '.create', $data);
     }
 
     /**
@@ -60,8 +57,11 @@ class {{ class }} extends Controller
      */
     public function store(Request $request)
     {
-        StoreDataRequests::make($request, $this->columns)->model($this->data['Models'])->storeHasFile($this->data['upload']);
-        toastr()->success('تمت الأضافة بنجاح', 'عملية ناجحة');
+        StoreDataRequests::make($request, $this->columns)
+            ->model($this->model)
+            ->storeHasFiles($this->uploadPath);
+            
+        toastr()->success('The data has been stored successfully', 'Success');
         return redirect()->back();
     }
 
@@ -74,9 +74,9 @@ class {{ class }} extends Controller
     public function show($id)
     {
         $data = [
-            'data' => $this->data['Models']::findorfail(decrypt($id)),
+            'data' => $this->model::findorfail(decrypt($id)),
         ];
-        return view($this->data['folder'] . $this->data['folderBlade'] . '.show', $data);
+        return view($this->folderBlade . '.show', $data);
     }
 
     /**
@@ -88,9 +88,9 @@ class {{ class }} extends Controller
     public function edit($id)
     {
         $data = [
-            'data' => $this->data['Models']::findorfail(decrypt($id)),
+            'data' => $this->model::findorfail(decrypt($id)),
         ];
-        return view($this->data['folder'] . $this->data['folderBlade'] . '.edit', $data);
+        return view($this->folderBlade . '.edit', $data);
     }
 
     /**
@@ -102,9 +102,11 @@ class {{ class }} extends Controller
      */
     public function update(Request $request, $id)
     {
-        StoreDataRequests::make($request, $this->columns)->model($this->data['Models'])
-                    ->updateHasFile(decrypt($id), $this->data['upload']);
-        toastr()->success('تم التعديل بنجاح', 'عملية ناجحة');
+        StoreDataRequests::make($request, $this->columns)
+            ->model($this->model)
+            ->updateHasFiles(decrypt($id), $this->uploadPath);
+
+        toastr()->success('The data has been updated successfully', 'Success');
         return redirect()->back();
     }
 
@@ -116,8 +118,8 @@ class {{ class }} extends Controller
      */
     public function destroy($id)
     {
-        StoreDataRequests::deleteHasFiles(decrypt($id), $this->data['upload'], $this->mediaColumns, $this->data['Models']);
-        toastr()->error('تم الحذف بنجاح', 'عملية ناجحة');
+        StoreDataRequests::deleteHasFiles(decrypt($id), $this->uploadPath, $this->mediaColumns, $this->model);
+        toastr()->success('Deleted successfully', 'Success');
         return redirect()->back();
     }
 }

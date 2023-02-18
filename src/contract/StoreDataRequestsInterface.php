@@ -1,9 +1,9 @@
 <?php
-namespace Nabil;
+namespace Nabil\Contract;
 
 use Illuminate\Http\Request;
 
-interface StoreDataRequests 
+interface StoreDataRequestsInterface 
 {
     /**
      *  set Model 
@@ -15,7 +15,7 @@ interface StoreDataRequests
      * OR (\App\Models\Model::class)
      * OR (\App\Models\Model)
      */
-    public function model($model);
+    public static function model($model);
 
     /**
      * get Request data fields & Attrributes of Model you want to save data 
@@ -33,6 +33,11 @@ interface StoreDataRequests
     public static function store();
 
     /**
+     * Store Data to Model with validation
+     */
+    public static function storeWithValidate();
+
+    /**
      * Update data on Model
      * 
      * @param Int $id
@@ -40,19 +45,41 @@ interface StoreDataRequests
     public static function update($id);
 
     /**
-     * Store data to model & upload file
+     * Update data on Model with Validation
+     * 
+     * @param Int $id
+     */
+    public static function updateWithValidate($id);
+
+    /**
+     * Store data to model & upload files
      * 
      * @param String $path
      */
-    public static function storeHasFile($path);
+    public static function storeHasFiles($path);
 
     /**
-     * Update data in Model & Upload File
+     * Store data to model & upload files with validate
+     * 
+     * @param String $path
+     */
+    public static function storeHasFilesValidate($path);
+
+    /**
+     * Update data in Model & Upload Files
      * 
      * @param Int $id
      * @param String $path 
      */
-    public static function updateHasFile($id, $path);
+    public static function updateHasFiles($id, $path);
+
+    /**
+     * Update data in Model & Upload Files with validate
+     * 
+     * @param Int $id
+     * @param String $path 
+     */
+    public static function updateHasFilesValidate($id, $path);
 
     /**
      * Delete record in Model

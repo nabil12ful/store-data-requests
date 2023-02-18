@@ -2,12 +2,27 @@
 
 namespace {{ namespace }};
 
-use {{ namespacedModel }};
 use {{ rootNamespace }}Http\Controllers\Controller;
-use {{ namespacedRequests }}
+use Illuminate\Http\Request;
+use Nabil\StoreDataRequests;
 
 class {{ class }} extends Controller
 {
+    protected $model = \{{ namespacedModel }}::class;
+
+    protected $folderBlade = 'frontend.';
+
+    protected $uploadPath = 'upload/';
+
+    protected $columns = [
+
+    ];
+
+    protected $mediaColumns = [
+        // columns name have a media files
+    ];
+
+
     /**
      * Display a listing of the resource.
      *
@@ -15,7 +30,10 @@ class {{ class }} extends Controller
      */
     public function index()
     {
-        //
+        $data = [
+            'data' => $this->model::all(),
+        ];
+        return view($this->folderBlade . '.index', $data);
     }
 
     /**
@@ -25,62 +43,83 @@ class {{ class }} extends Controller
      */
     public function create()
     {
-        //
+        $data = [
+
+        ];
+        return view($this->folderBlade . '.create', $data);
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \{{ namespacedStoreRequest }}  $request
+     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store({{ storeRequest }} $request)
+    public function store(Request $request)
     {
-        //
+        StoreDataRequests::make($request, $this->columns)
+            ->model($this->model)
+            ->storeHasFiles($this->uploadPath);
+
+        toastr()->success('The data has been stored successfully', 'Success');
+        return redirect()->back();
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \{{ namespacedModel }}  ${{ modelVariable }}
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show({{ model }} ${{ modelVariable }})
+    public function show($id)
     {
-        //
+        $data = [
+            'data' => $this->model::findorfail(decrypt($id)),
+        ];
+        return view($this->folderBlade . '.show', $data);
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \{{ namespacedModel }}  ${{ modelVariable }}
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit({{ model }} ${{ modelVariable }})
+    public function edit($id)
     {
-        //
+        $data = [
+            'data' => $this->model::findorfail(decrypt($id)),
+        ];
+        return view($this->folderBlade . '.edit', $data);
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \{{ namespacedUpdateRequest }}  $request
-     * @param  \{{ namespacedModel }}  ${{ modelVariable }}
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update({{ updateRequest }} $request, {{ model }} ${{ modelVariable }})
+    public function update(Request $request, $id)
     {
-        //
+        StoreDataRequests::make($request, $this->columns)
+            ->model($this->model)
+            ->updateHasFiles(decrypt($id), $this->uploadPath);
+
+        toastr()->success('The data has been updated successfully', 'Success');
+        return redirect()->back();
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \{{ namespacedModel }}  ${{ modelVariable }}
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy({{ model }} ${{ modelVariable }})
+    public function destroy($id)
     {
-        //
+        StoreDataRequests::deleteHasFiles(decrypt($id), $this->uploadPath, $this->mediaColumns, $this->model);
+        toastr()->success('Deleted successfully', 'Success');
+        return redirect()->back();
     }
 }
