@@ -11,7 +11,7 @@ composer require nabil12ful/store-data-requests
 ```
 To publish
 ```php
-php artisan vendor:publish --provider="Nabil\StoreDataRequestsServiceProfider"
+php artisan vendor:publish --provider="Nabil\StoreDataRequestsServiceProvider"
 ```
 ## Usage
 
