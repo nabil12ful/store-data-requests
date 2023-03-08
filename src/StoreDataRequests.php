@@ -128,7 +128,7 @@ class StoreDataRequests implements StoreData
     public static function updateWithValidate($id)
     {
         $attrs = array_keys(Self::$attrs);
-        $valid = Validator::make(Self::$request, Self::$attrs);
+        $valid = Validator::make(Self::$request->all(), Self::$attrs);
         if($valid->fails())
         {
             return $valid;
@@ -170,7 +170,7 @@ class StoreDataRequests implements StoreData
     public static function storeHasFilesValidate($path)
     {
         $attrs = array_keys(Self::$attrs);
-        $valid = Validator::make(Self::$request, Self::$attrs);
+        $valid = Validator::make(Self::$request->all(), Self::$attrs);
         if($valid->fails())
         {
             return back()->withInput()->withErrors($valid);
