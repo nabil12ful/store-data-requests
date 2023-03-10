@@ -2,7 +2,6 @@
 namespace Nabil;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Validator;
 use Nabil\Contract\StoreDataRequestsInterface as StoreData;
 
@@ -202,7 +201,7 @@ class StoreDataRequests implements StoreData
         {
             if(!empty(Self::$request->$attr) && Self::$request->hasfile($attr))
             {
-                File::delete(Self::parsePath($path).$model->{$attr});
+                Self::deleteFile($path, $model->{$attr});
                 $model->{$attr} = Self::uploadFile(Self::$request->{$attr}, $path);
             }
             elseif(empty(Self::$request->$attr))
@@ -235,7 +234,7 @@ class StoreDataRequests implements StoreData
             {
                 if(!empty(Self::$request->$attr) && Self::$request->hasfile($attr))
                 {
-                    File::delete(Self::parsePath($path).$model->{$attr});
+                    Self::deleteFile($path, $model->{$attr});
                     $model->{$attr} = Self::uploadFile(Self::$request->{$attr}, $path);
                 }
                 elseif(empty(Self::$request->$attr))
@@ -277,12 +276,12 @@ class StoreDataRequests implements StoreData
         {
             foreach($columns as $column)
             {
-                File::delete(Self::parsePath($path).$model->$column);
+                Self::deleteFile($path, $model->$column);
             }
         }
         if(is_string($columns))
         {
-            File::delete(Self::parsePath($path).$model->$columns);
+            Self::deleteFile($path, $model->$columns);
         }
         $model->delete();
     }

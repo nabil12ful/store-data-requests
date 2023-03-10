@@ -1,11 +1,13 @@
 <?php
 namespace Nabil;
 
+use Illuminate\Support\Facades\File;
+
 trait Files
 {
     /**
-     * Parse Path 
-     * 
+     * Parse Path
+     *
      * @param String $path
      */
     protected static function parsePath($path)
@@ -29,5 +31,10 @@ trait Files
         $filename = time() . $file->getClientOriginalname();
         $file->move($path, $filename);
         return $filename;
+    }
+
+    public static function deleteFile($path, $file)
+    {
+        File::delete(Self::parsePath($path).'/'.$file);
     }
 }
