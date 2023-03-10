@@ -26,9 +26,9 @@ class StoreDataRequests implements StoreData
     protected static $model;
 
     /**
-     *  set Model 
-     * 
-     * @param Model $model 
+     *  set Model
+     *
+     * @param Model $model
      * You can write like ('Model')
      * OR ('\App\Models\Model')
      * OR (Model::class)
@@ -54,7 +54,7 @@ class StoreDataRequests implements StoreData
     }
 
     /**
-     * get Request data fields & Attrributes of Model you want to save data 
+     * get Request data fields & Attrributes of Model you want to save data
      * But Field name = Column Name
      * @param Illuminate\Http\Request $request
      * @param Array $attributes
@@ -107,7 +107,7 @@ class StoreDataRequests implements StoreData
 
     /**
      * Update data on Model
-     * 
+     *
      * @param Int $id
      */
     public static function update($id)
@@ -122,13 +122,13 @@ class StoreDataRequests implements StoreData
 
     /**
      * Update data on Model with Validation
-     * 
+     *
      * @param Int $id
      */
     public static function updateWithValidate($id)
     {
         $attrs = array_keys(Self::$attrs);
-        $valid = Validator::make(Self::$request, Self::$attrs);
+        $valid = Validator::make(Self::$request->all(), Self::$attrs);
         if($valid->fails())
         {
             return $valid;
@@ -144,7 +144,7 @@ class StoreDataRequests implements StoreData
 
     /**
      * Store data to model & upload files
-     * 
+     *
      * @param String $path
      */
     public static function storeHasFiles($path)
@@ -164,16 +164,16 @@ class StoreDataRequests implements StoreData
 
     /**
      * Store data to model & upload files with validate
-     * 
+     *
      * @param String $path
      */
     public static function storeHasFilesValidate($path)
     {
         $attrs = array_keys(Self::$attrs);
-        $valid = Validator::make(Self::$request, Self::$attrs);
+        $valid = Validator::make(Self::$request->all(), Self::$attrs);
         if($valid->fails())
         {
-            return back()->withInput()->withErrors($valid);
+            return $valid;
         }else{
             $data = [];
             foreach($attrs as $attr)
@@ -191,9 +191,9 @@ class StoreDataRequests implements StoreData
 
     /**
      * Update data in Model & Upload Files
-     * 
+     *
      * @param Int $id
-     * @param String $path 
+     * @param String $path
      */
     public static function updateHasFiles($id, $path)
     {
@@ -218,34 +218,41 @@ class StoreDataRequests implements StoreData
 
     /**
      * Update data in Model & Upload Files with validate
-     * 
+     *
      * @param Int $id
-     * @param String $path 
+     * @param String $path
      */
     public static function updateHasFilesValidate($id, $path)
     {
         $model = Self::$model::findOrFail($id);
-        foreach(Self::$attrs as $attr)
+        $attrs = array_keys(Self::$attrs);
+        $valid = Validator::make(Self::$request->all(), Self::$attrs);
+        if($valid->fails())
         {
-            if(!empty(Self::$request->$attr) && Self::$request->hasfile($attr))
+            return $valid;
+        }else{
+            foreach($attrs as $attr)
             {
-                File::delete(Self::parsePath($path).$model->{$attr});
-                $model->{$attr} = Self::uploadFile(Self::$request->{$attr}, $path);
+                if(!empty(Self::$request->$attr) && Self::$request->hasfile($attr))
+                {
+                    File::delete(Self::parsePath($path).$model->{$attr});
+                    $model->{$attr} = Self::uploadFile(Self::$request->{$attr}, $path);
+                }
+                elseif(empty(Self::$request->$attr))
+                {
+                    $model->{$attr} = $model->{$attr};
+                }
+                else{
+                    $model->{$attr} = Self::$request->{$attr};
+                }
             }
-            elseif(empty(Self::$request->$attr))
-            {
-                $model->{$attr} = $model->{$attr};
-            }
-            else{
-                $model->{$attr} = Self::$request->{$attr};
-            }
+            $model->update();
         }
-        $model->update();
     }
 
     /**
      * Delete record in Model
-     * 
+     *
      * @param Int $id
      * @param Model $model Can be NULL & use model() METHOD
      */
@@ -257,7 +264,7 @@ class StoreDataRequests implements StoreData
 
     /**
      * Delete record in DB & Delete File uploaded
-     * 
+     *
      * @param Int $id
      * @param String $path
      * @param String|Array $columns By default = 'image'
