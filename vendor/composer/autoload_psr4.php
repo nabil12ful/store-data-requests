@@ -6,5 +6,5 @@ $vendorDir = dirname(__DIR__);
 $baseDir = dirname($vendorDir);
 
 return array(
-    'Nabil12ful\\StoreDataRequests\\' => array($baseDir . '/src'),
+    'Nabil\\' => array($baseDir . '/src'),
 );

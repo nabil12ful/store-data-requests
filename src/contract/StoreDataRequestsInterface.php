@@ -1,14 +1,17 @@
 <?php
+/**
+ * Develop by Nabil Hamada 2023
+ */
 namespace Nabil\Contract;
 
 use Illuminate\Http\Request;
 
-interface StoreDataRequestsInterface 
+interface StoreDataRequestsInterface
 {
     /**
-     *  set Model 
-     * 
-     * @param Model $model 
+     *  set Model
+     *
+     * @param Model $model
      * You can write like ('Model')
      * OR ('\App\Models\Model')
      * OR (Model::class)
@@ -18,7 +21,7 @@ interface StoreDataRequestsInterface
     public static function model($model);
 
     /**
-     * get Request data fields & Attrributes of Model you want to save data 
+     * get Request data fields & Attrributes of Model you want to save data
      * But Field name = Column Name
      * @param Illuminate\Http\Request $request
      * @param Array $attributes
@@ -39,51 +42,51 @@ interface StoreDataRequestsInterface
 
     /**
      * Update data on Model
-     * 
+     *
      * @param Int $id
      */
     public static function update($id);
 
     /**
      * Update data on Model with Validation
-     * 
+     *
      * @param Int $id
      */
     public static function updateWithValidate($id);
 
     /**
      * Store data to model & upload files
-     * 
+     *
      * @param String $path
      */
     public static function storeHasFiles($path);
 
     /**
      * Store data to model & upload files with validate
-     * 
+     *
      * @param String $path
      */
     public static function storeHasFilesValidate($path);
 
     /**
      * Update data in Model & Upload Files
-     * 
+     *
      * @param Int $id
-     * @param String $path 
+     * @param String $path
      */
     public static function updateHasFiles($id, $path);
 
     /**
      * Update data in Model & Upload Files with validate
-     * 
+     *
      * @param Int $id
-     * @param String $path 
+     * @param String $path
      */
     public static function updateHasFilesValidate($id, $path);
 
     /**
      * Delete record in Model
-     * 
+     *
      * @param Int $id
      * @param Model $model Can be NULL & use model() METHOD
      */
@@ -91,7 +94,7 @@ interface StoreDataRequestsInterface
 
     /**
      * Delete record in DB & Delete File uploaded
-     * 
+     *
      * @param Int $id
      * @param String $path
      * @param String|Array $columns By default = 'image'

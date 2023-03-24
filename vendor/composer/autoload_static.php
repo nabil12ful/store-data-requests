@@ -9,12 +9,12 @@ class ComposerStaticInit87182f6a5e23bd3b02e1dd98308b46a8
     public static $prefixLengthsPsr4 = array (
         'N' => 
         array (
-            'Nabil12ful\\StoreDataRequests\\' => 29,
+            'Nabil\\' => 6,
         ),
     );
 
     public static $prefixDirsPsr4 = array (
-        'Nabil12ful\\StoreDataRequests\\' => 
+        'Nabil\\' => 
         array (
             0 => __DIR__ . '/../..' . '/src',
         ),
