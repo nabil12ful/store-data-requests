@@ -2,7 +2,7 @@
 /**
  * Develop by Nabil Hamada 2023
  */
-namespace Nabil\Contract;
+namespace Nabil\Contracts;
 
 use Illuminate\Http\Request;
 

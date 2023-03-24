@@ -1,9 +1,14 @@
 <?php
+
+/**
+ * Develop by Nabil Hamada
+ */
+
 namespace Nabil;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use Nabil\Contract\StoreDataRequestsInterface as StoreData;
+use Nabil\Contracts\StoreDataRequestsInterface as StoreData;
 
 class StoreDataRequests implements StoreData
 {
