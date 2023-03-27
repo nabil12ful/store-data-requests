@@ -28,7 +28,7 @@ interface StoreDataRequestsInterface
      * @param Model $model Can be NULL & use model() METHOD
      * @return Self
      */
-    public static function make(Request $request, array $attributes, $model = null);
+    public static function make(Request $request, array $attributes, array $mediaColumns = [], $model = null);
 
     /**
      * Store Data to Model
@@ -101,4 +101,9 @@ interface StoreDataRequestsInterface
      * @param Model $model Can be NULL & use model() METHOD
      */
     public static function deleteHasFiles(Int $id, String $path, string|array $columns = 'image', $model = null);
+
+    /**
+     * Validate data
+     */
+    // protected static function validate();
 }

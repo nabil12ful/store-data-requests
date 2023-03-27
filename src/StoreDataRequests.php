@@ -6,18 +6,25 @@
 
 namespace Nabil;
 
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Validator;
 use Nabil\Contracts\StoreDataRequestsInterface as StoreData;
 
 class StoreDataRequests implements StoreData
 {
-    use Files;
+    use Files, Validate;
 
     /**
      * @var array
      */
     protected static $attrs = [];
+
+    /**
+     * @var array
+     */
+    protected static $media = [];
 
     /**
      * @var Illuminate\Http\Request
@@ -62,16 +69,18 @@ class StoreDataRequests implements StoreData
      * But Field name = Column Name
      * @param Illuminate\Http\Request $request
      * @param Array $attributes
+     * @param Array $mediaColumns Attributes has files you want to upload it
      * @param Model $model Can be NULL & use model() METHOD
      * @return Self
      */
-    public static function make(Request $request, array $attributes, $model = null)
+    public static function make(Request $request, array $attributes, array $mediaColumns = [], $model = null)
     {
         if(!is_null($model))
         {
             Self::model($model);
         }
-        Self::$attrs = $attributes;
+        Self::$attrs = array_merge($attributes, $mediaColumns);
+        Self::$media = $mediaColumns;
         Self::$request = $request;
         return new Self;
     }
@@ -95,10 +104,9 @@ class StoreDataRequests implements StoreData
     public static function storeWithValidate()
     {
         $attrs = array_keys(Self::$attrs);
-        $valid = Validator::make(Self::$request->all(), Self::$attrs);
-        if($valid->fails())
+        if(Self::validate()->fails())
         {
-            return $valid;
+            return Self::validate();
         }else{
             $data = [];
             foreach($attrs as $attr)
@@ -132,10 +140,9 @@ class StoreDataRequests implements StoreData
     public static function updateWithValidate($id)
     {
         $attrs = array_keys(Self::$attrs);
-        $valid = Validator::make(Self::$request->all(), Self::$attrs);
-        if($valid->fails())
+        if(Self::validateOnUpdate($id)->fails())
         {
-            return $valid;
+            return Self::validateOnUpdate($id)->fails();
         }else{
             $model = Self::$model::findOrFail($id);
             foreach($attrs as $attr)
@@ -174,10 +181,9 @@ class StoreDataRequests implements StoreData
     public static function storeHasFilesValidate($path)
     {
         $attrs = array_keys(Self::$attrs);
-        $valid = Validator::make(Self::$request->all(), Self::$attrs);
-        if($valid->fails())
+        if(Self::validate()->fails())
         {
-            return $valid;
+            return Self::validate();
         }else{
             $data = [];
             foreach($attrs as $attr)
@@ -209,7 +215,7 @@ class StoreDataRequests implements StoreData
                 Self::deleteFile($path, $model->{$attr});
                 $model->{$attr} = Self::uploadFile(Self::$request->{$attr}, $path);
             }
-            elseif(empty(Self::$request->$attr))
+            elseif(empty(Self::$request->$attr) && in_array(Self::$request->$attr, Self::$media))
             {
                 $model->{$attr} = $model->{$attr};
             }
@@ -230,10 +236,10 @@ class StoreDataRequests implements StoreData
     {
         $model = Self::$model::findOrFail($id);
         $attrs = array_keys(Self::$attrs);
-        $valid = Validator::make(Self::$request->all(), Self::$attrs);
-        if($valid->fails())
+        $media = array_keys(Self::$media);
+        if(Self::validateOnUpdate($id)->fails())
         {
-            return $valid;
+            return Self::validateOnUpdate($id);
         }else{
             foreach($attrs as $attr)
             {
@@ -242,7 +248,7 @@ class StoreDataRequests implements StoreData
                     Self::deleteFile($path, $model->{$attr});
                     $model->{$attr} = Self::uploadFile(Self::$request->{$attr}, $path);
                 }
-                elseif(empty(Self::$request->$attr))
+                elseif(empty(Self::$request->$attr) && in_array($attr, $media))
                 {
                     $model->{$attr} = $model->{$attr};
                 }
@@ -251,6 +257,7 @@ class StoreDataRequests implements StoreData
                 }
             }
             $model->update();
+            return false;
         }
     }
 
