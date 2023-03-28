@@ -59,7 +59,7 @@ class {{ class }} extends Controller
     {
         StoreDataRequests::make($request, $this->columns, $this->mediaColumns)
             ->model($this->model)
-            ->storeHasFiles($this->uploadPath);
+            ->store($this->uploadPath);
             
         toastr()->success('The data has been stored successfully', 'Success');
         return redirect()->back();
@@ -104,7 +104,7 @@ class {{ class }} extends Controller
     {
         StoreDataRequests::make($request, $this->columns, $this->mediaColumns)
             ->model($this->model)
-            ->updateHasFiles(decrypt($id), $this->uploadPath);
+            ->update(decrypt($id), $this->uploadPath);
 
         toastr()->success('The data has been updated successfully', 'Success');
         return redirect()->back();
@@ -118,7 +118,7 @@ class {{ class }} extends Controller
      */
     public function destroy($id)
     {
-        StoreDataRequests::deleteHasFiles(decrypt($id), $this->uploadPath, $this->mediaColumns, $this->model);
+        StoreDataRequests::delete(decrypt($id), $this->uploadPath, $this->model);
         toastr()->success('Deleted successfully', 'Success');
         return redirect()->back();
     }
