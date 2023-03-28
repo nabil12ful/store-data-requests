@@ -67,13 +67,13 @@ protected $mediaColumns = [
 ### To use Vaildation 
 Create request validation by
 ```php
-php artisan make:request ProdectStoreRequest
+php artisan make:request UserStoreRequest
 ```
 
 ```php
-public function store(ProdectStoreRequest $request): RedirectResponse
+public function store(UserStoreRequest $request): RedirectResponse
 {
-	StoreDataRequests::model($this->model)->make($request, $this->columns)->store();
+	StoreDataRequests::model($this->model)->make($request, $this->columns)->store($this->uploadPath);
 }
 ```
 
@@ -83,17 +83,21 @@ First change columns array like:
 ```php
 protected $columns = [
 	// table columns & fields name with rules
-	'image' => 'required|image',
 	'name' => 'required|string|min:5',
 	'email' => 'required|email',
 ];
+
+protected $mediaColumns = [
+	// table columns & fields name has files with rules
+	'image' => 'required|image',
+];
 ```
-And use `storeWithValidate`, `updateWithValidate`, `storeHasFilesValidate` or `updateHasFilesValidate` method
+And use `storeValidated`, `updateValidated` methods
 
 ```php
 public function store(Request $request)
 {
-	$result = StoreDataRequests::model($this->model)->make($request, $this->columns)->storeWithValidate();
+	$result = StoreDataRequests::model($this->model)->make($request, $this->columns)->storeValidated('upload/users');
 
     if(isset($result->id))
     {
@@ -124,15 +128,13 @@ public function update($id, Request $request)
 
 ## Delete records
 
-```php
-StoreDataRequests::delete(decrypt($id), $this->model);
-```
-
-If you want to delete files from uploads path with delete a record:
+Enter path Param If you want to delete files from uploads path with delete a record:
+    
 
 ```php
-StoreDataRequests::deleteHasFiles(decrypt($id), $this->uploadPath, $this->mediaColumns, $this->model);
+StoreDataRequests::model($this->model)->delete(decrypt($id), $this->uploadPath);
 ```
+
 
 ## Use our service in simple Controller
 First import our plugin in your Controller file
@@ -160,12 +162,12 @@ public function update(Request $request, $id)
 use:
 
 ```php
-StoreDataRequests::model('Prodect')->make($request, ['title','description'], ['image'])->storeHasFile('path/to/upload');
+StoreDataRequests::model('Prodect')->make($request, ['title','description'], ['image'])->store('path/to/upload');
 ```
 or update has file:
 
 ```php
-StoreDataRequests::model('Prodect')->make($request, ['title','description'], ['image'])->updateHasFile($id, 'path/to/upload');
+StoreDataRequests::model('Prodect')->make($request, ['title','description'], ['image'])->update($id, 'path/to/upload');
 ```
 
 ### Thanks for Eng/Sameh Mohamed
