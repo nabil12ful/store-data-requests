@@ -6,15 +6,12 @@
 
 namespace Nabil;
 
-use Illuminate\Support\Str;
 use Illuminate\Http\Request;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\Validator;
 use Nabil\Contracts\StoreDataRequestsInterface as StoreData;
 
 class StoreDataRequests implements StoreData
 {
-    use Files, Validate;
+    use Files, Validate, Encrypt;
 
     /**
      * @var array
@@ -27,6 +24,11 @@ class StoreDataRequests implements StoreData
     protected static $media = [];
 
     /**
+     * @var array
+     */
+    protected static $encryptColumns = [];
+
+    /**
      * @var Illuminate\Http\Request
      */
     protected static $request;
@@ -35,6 +37,11 @@ class StoreDataRequests implements StoreData
      * @var Model
      */
     protected static $model;
+
+    /**
+     * @var string
+     */
+    protected static $path = 'upload/';
 
     /**
      *  set Model
@@ -86,86 +93,32 @@ class StoreDataRequests implements StoreData
     }
 
     /**
+     * Encrypt Columns data
+     * 
+     * @param Array $columns
+     */
+    public static function encrypt(Array $columns)
+    {
+        Self::$encryptColumns = $columns;
+        return new self;
+    }
+
+    /**
      * Store Data to Model
+     * 
+     * @param String $path by default = 'upload/'
      */
-    public static function store()
+    public static function store(String $path = null)
     {
         $data = [];
+        $path == null ? Self::$path : $path;
         foreach(Self::$attrs as $attr)
         {
-            $data[$attr] = Self::$request->{$attr};
-        }
-        return Self::$model::create($data);
-    }
-
-    /**
-     * Store Data to Model with validation
-     */
-    public static function storeWithValidate()
-    {
-        $attrs = array_keys(Self::$attrs);
-        if(Self::validate()->fails())
-        {
-            return Self::validate();
-        }else{
-            $data = [];
-            foreach($attrs as $attr)
-            {
-                $data[$attr] = Self::$request->{$attr};
-            }
-            return Self::$model::create($data);
-        }
-    }
-
-    /**
-     * Update data on Model
-     *
-     * @param Int $id
-     */
-    public static function update($id)
-    {
-        $model = Self::$model::findOrFail($id);
-        foreach(Self::$attrs as $attr)
-        {
-            $model->{$attr} = Self::$request->{$attr};
-        }
-        $model->update();
-    }
-
-    /**
-     * Update data on Model with Validation
-     *
-     * @param Int $id
-     */
-    public static function updateWithValidate($id)
-    {
-        $attrs = array_keys(Self::$attrs);
-        if(Self::validateOnUpdate($id)->fails())
-        {
-            return Self::validateOnUpdate($id)->fails();
-        }else{
-            $model = Self::$model::findOrFail($id);
-            foreach($attrs as $attr)
-            {
-                $model->{$attr} = Self::$request->{$attr};
-            }
-            $model->update();
-        }
-    }
-
-    /**
-     * Store data to model & upload files
-     *
-     * @param String $path
-     */
-    public static function storeHasFiles($path)
-    {
-        $data = [];
-        foreach(Self::$attrs as $attr)
-        {
-            if(Self::$request->hasfile($attr))
+            if(Self::$request->hasfile($attr) && in_array($attr, Self::$media))
             {
                 $data[$attr] = Self::uploadFile(Self::$request->$attr, $path);
+            }elseif(in_array($attr, Self::$encryptColumns)){
+                $data[$attr] = Self::encrypt_data(Self::$request->{$attr});
             }else{
                 $data[$attr] = Self::$request->{$attr};
             }
@@ -174,40 +127,15 @@ class StoreDataRequests implements StoreData
     }
 
     /**
-     * Store data to model & upload files with validate
-     *
-     * @param String $path
-     */
-    public static function storeHasFilesValidate($path)
-    {
-        $attrs = array_keys(Self::$attrs);
-        if(Self::validate()->fails())
-        {
-            return Self::validate();
-        }else{
-            $data = [];
-            foreach($attrs as $attr)
-            {
-                if(Self::$request->hasfile($attr))
-                {
-                    $data[$attr] = Self::uploadFile(Self::$request->$attr, $path);
-                }else{
-                    $data[$attr] = Self::$request->{$attr};
-                }
-            }
-            return Self::$model::create($data);
-        }
-    }
-
-    /**
-     * Update data in Model & Upload Files
+     * Update data on Model
      *
      * @param Int $id
-     * @param String $path
+     * @param String $path by default = 'upload/'
      */
-    public static function updateHasFiles($id, $path)
+    public static function update($id, String $path = null)
     {
         $model = Self::$model::findOrFail($id);
+        $path == null ? Self::$path : $path;
         foreach(Self::$attrs as $attr)
         {
             if(!empty(Self::$request->$attr) && Self::$request->hasfile($attr))
@@ -218,6 +146,8 @@ class StoreDataRequests implements StoreData
             elseif(empty(Self::$request->$attr) && in_array(Self::$request->$attr, Self::$media))
             {
                 $model->{$attr} = $model->{$attr};
+            }elseif(in_array($attr, Self::$encryptColumns)){
+                $model->{$attr} = Self::encrypt_data(Self::$request->{$attr});
             }
             else{
                 $model->{$attr} = Self::$request->{$attr};
@@ -227,14 +157,15 @@ class StoreDataRequests implements StoreData
     }
 
     /**
-     * Update data in Model & Upload Files with validate
+     * Update data on Model with Validation
      *
      * @param Int $id
-     * @param String $path
+     * @param String $path by default = 'upload/'
      */
-    public static function updateHasFilesValidate($id, $path)
+    public static function updateValidated($id, String $path = null)
     {
         $model = Self::$model::findOrFail($id);
+        $path == null ? Self::$path : $path;
         $attrs = array_keys(Self::$attrs);
         $media = array_keys(Self::$media);
         if(Self::validateOnUpdate($id)->fails())
@@ -243,7 +174,7 @@ class StoreDataRequests implements StoreData
         }else{
             foreach($attrs as $attr)
             {
-                if(!empty(Self::$request->$attr) && Self::$request->hasfile($attr))
+                if(!empty(Self::$request->$attr) && Self::$request->hasfile($attr) && in_array($attr, $media))
                 {
                     Self::deleteFile($path, $model->{$attr});
                     $model->{$attr} = Self::uploadFile(Self::$request->{$attr}, $path);
@@ -251,6 +182,10 @@ class StoreDataRequests implements StoreData
                 elseif(empty(Self::$request->$attr) && in_array($attr, $media))
                 {
                     $model->{$attr} = $model->{$attr};
+                }
+                elseif(in_array($attr, Self::$encryptColumns))
+                {
+                    $model->{$attr} = Self::encrypt_data(Self::$request->{$attr});
                 }
                 else{
                     $model->{$attr} = Self::$request->{$attr};
@@ -262,39 +197,52 @@ class StoreDataRequests implements StoreData
     }
 
     /**
-     * Delete record in Model
+     * Store data to model & upload files with validate
      *
-     * @param Int $id
-     * @param Model $model Can be NULL & use model() METHOD
+     * @param String $path by default = 'upload/'
      */
-    public static function delete(Int $id, $model = null)
+    public static function storeValidated(String $path = null)
     {
-        $model == null ? $model = Self::$model::findOrFail($id) : Self::model($model) && $model = Self::$model::findOrFail($id);
-        $model->delete();
+        $attrs = array_keys(Self::$attrs);
+        $path == null ? Self::$path : $path;
+        if(Self::validate()->fails())
+        {
+            return Self::validate();
+        }else{
+            $data = [];
+            foreach($attrs as $attr)
+            {
+                if(Self::$request->hasfile($attr))
+                {
+                    $data[$attr] = Self::uploadFile(Self::$request->$attr, $path);
+                }
+                elseif(in_array($attr, Self::$encryptColumns))
+                {
+                    $data[$attr] = Self::encrypt_data(Self::$request->{$attr});
+                }else{
+                    $data[$attr] = Self::$request->{$attr};
+                }
+            }
+            return Self::$model::create($data);
+        }
     }
 
     /**
-     * Delete record in DB & Delete File uploaded
+     * Delete record in Model
      *
      * @param Int $id
-     * @param String $path
-     * @param String|Array $columns By default = 'image'
+     * @param String $path by default = 'upload/'
      * @param Model $model Can be NULL & use model() METHOD
      */
-    public static function deleteHasFiles(Int $id, String $path, string|array $columns = 'image', $model = null)
+    public static function delete(Int $id, String $path = null, $model = null)
     {
         $model == null ? $model = Self::$model::findOrFail($id) : Self::model($model) && $model = Self::$model::findOrFail($id);
-        if(is_array($columns))
+        $path == null ? Self::$path : $path;
+        foreach(Self::$media as $column)
         {
-            foreach($columns as $column)
-            {
-                Self::deleteFile($path, $model->$column);
-            }
+            Self::deleteFile($path, $model->$column);
         }
-        if(is_string($columns))
-        {
-            Self::deleteFile($path, $model->$columns);
-        }
+
         $model->delete();
     }
 }

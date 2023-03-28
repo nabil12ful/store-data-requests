@@ -31,79 +31,50 @@ interface StoreDataRequestsInterface
     public static function make(Request $request, array $attributes, array $mediaColumns = [], $model = null);
 
     /**
-     * Store Data to Model
+     * Encrypt Data
+     * 
+     * @param Array $columns
      */
-    public static function store();
+    public static function encrypt(Array $columns);
+
+    /**
+     * Store Data to Model
+     * 
+     * @param String $path by default = 'upload/'
+     */
+    public static function store(String $path = null);
 
     /**
      * Store Data to Model with validation
+     * 
+     * @param String $path by default = 'upload/'
      */
-    public static function storeWithValidate();
+    public static function storeValidated(String $path = null);
 
     /**
      * Update data on Model
      *
      * @param Int $id
+     * 
+     * @param String $path by default = 'upload/'
      */
-    public static function update($id);
+    public static function update($id, String $path = null);
 
     /**
      * Update data on Model with Validation
      *
      * @param Int $id
+     * 
+     * @param String $path by default = 'upload/'
      */
-    public static function updateWithValidate($id);
-
-    /**
-     * Store data to model & upload files
-     *
-     * @param String $path
-     */
-    public static function storeHasFiles($path);
-
-    /**
-     * Store data to model & upload files with validate
-     *
-     * @param String $path
-     */
-    public static function storeHasFilesValidate($path);
-
-    /**
-     * Update data in Model & Upload Files
-     *
-     * @param Int $id
-     * @param String $path
-     */
-    public static function updateHasFiles($id, $path);
-
-    /**
-     * Update data in Model & Upload Files with validate
-     *
-     * @param Int $id
-     * @param String $path
-     */
-    public static function updateHasFilesValidate($id, $path);
+    public static function updateValidated($id, String $path = null);
 
     /**
      * Delete record in Model
      *
      * @param Int $id
+     * @param String $path by default = 'upload/'
      * @param Model $model Can be NULL & use model() METHOD
      */
-    public static function delete(Int $id, $model = null);
-
-    /**
-     * Delete record in DB & Delete File uploaded
-     *
-     * @param Int $id
-     * @param String $path
-     * @param String|Array $columns By default = 'image'
-     * @param Model $model Can be NULL & use model() METHOD
-     */
-    public static function deleteHasFiles(Int $id, String $path, string|array $columns = 'image', $model = null);
-
-    /**
-     * Validate data
-     */
-    // protected static function validate();
+    public static function delete(Int $id, String $path = null, $model = null);
 }
